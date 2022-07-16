@@ -6,8 +6,8 @@ export default function ProductCard({ product, ...rest }) {
   //console.log(product);
   const { id, url } = JSON.parse(product.imgs_repuestos)[0];
 
-  const strInit = url.slice(0, 46);
-  const strEnd = url.slice(46);
+  const strInit = url.slice(0, 49);
+  const strEnd = url.slice(49);
   const strResult = `${strInit}q_auto,f_auto/${strEnd}`;
 
   return (

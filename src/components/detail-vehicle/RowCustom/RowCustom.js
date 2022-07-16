@@ -84,8 +84,8 @@ function ListImages(props) {
 
   //Optimizando la carga de imagenes
   const strCerti = row.url_certificado;
-  const strInit = strCerti.slice(0, 46);
-  const strEnd = strCerti.slice(46);
+  const strInit = strCerti.slice(0, 49);
+  const strEnd = strCerti.slice(49);
   const strResultCertifi = `${strInit}q_auto,f_auto/${strEnd}`;
 
   return (
