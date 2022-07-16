@@ -27,9 +27,8 @@ const app = express();
 // app.set(cors());
 const whitelist = [
   "http://localhost:3000", //Modo desarrollo
-  "https://segas-admin.000webhostapp.com", //Deploy en 000webhost
-  "https://segas-prueba.netlify.app", // Deploy en Netlify con Github
   "https://segas.netlify.app", // Deploy en Netlify Manual
+  "https://segas-automotores.netlify.app", // Deploy en Netlify Manual
 ];
 var corsOptions = {
   origin: function (origin, callback) {
