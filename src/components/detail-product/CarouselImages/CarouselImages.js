@@ -44,8 +44,8 @@ export default function CarouselImages(props) {
       >
         {collage.map((item, index) => {
           const strCerti = item.url;
-          const strInit = strCerti.slice(0, 46);
-          const strEnd = strCerti.slice(46);
+          const strInit = strCerti.slice(0, 49);
+          const strEnd = strCerti.slice(49);
           const strResultCertifi = `${strInit}q_auto,f_auto/${strEnd}`;
 
           return (
