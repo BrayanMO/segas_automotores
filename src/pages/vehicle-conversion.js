@@ -1,6 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import dynamic from "next/dynamic";
 
 import {
   Box,
@@ -12,33 +11,26 @@ import {
   CircularProgress,
   IconButton,
   Autocomplete,
+  Card,
+  Stack,
+  FormHelperText,
 } from "@mui/material";
-import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { DashboardLayout } from "src/layout/dashboard-layout";
 import { DatePickerField, InputField } from "src/components/FormFields";
 
-import { Formik, Form, ErrorMessage, FieldArray } from "formik";
+import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
 import { format, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 
 import { getVehiculoPlaca, addConversionVehiculoClient, uploudImage } from "src/Api/VehicleApi";
 import { discountStock, getProducts } from "src/Api/RepuestoApi";
-
-const SingleImagePreview = dynamic(() =>
-  import("src/components/vehicle-conversion/single-image-preview")
-);
-const MultipleImagePreview = dynamic(() =>
-  import("src/components/vehicle-conversion/multiple-image-preview")
-);
-
-const SUPPORTED_FORMATS = ["image/jpeg", "image/png"];
+import { MultiFileUpload, SingleFileUpload } from "src/components/UploadFile";
 
 export default function VehicleConversion() {
   const [infoVehiculo, setInfoVehiculo] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [listProducts, setListProducts] = useState([]);
 
   useEffect(() => {
@@ -48,21 +40,12 @@ export default function VehicleConversion() {
     })();
   }, []);
 
-  const certificadoRef = useRef(null);
-  const collageRef = useRef(null);
-
   async function _handleSubmit(values, actions) {
-    // // console.log(values.imgCertificate);
-    // console.log(values.imgsCollage);
     const upload = await uploudImage("certificate", values.imgCertificate, null);
     // console.log(upload);
 
     const uploadCollage = await uploudImage("collage", null, values.imgsCollage);
     // console.log(uploadCollage);
-
-    // console.log(`Fecha Proxima Revision: ${format(values.fechaNextRevision, "yyyy-MM-dd")}`);
-    // console.log(`Fecha cambio de filtro: ${format(values.fechaChangeFilter, "yyyy-MM-dd")}`);
-    // console.log(`Fecha de mantenimiento: ${format(values.fechaMantenimiento, "yyyy-MM-dd")}`);
 
     const dataProcess = {
       idVehiculo: infoVehiculo.id_vehiculo,
@@ -128,19 +111,7 @@ export default function VehicleConversion() {
       fechaNextRevision: Yup.string().required("Ingrese la fecha de la proxima revision"),
       fechaChangeFilter: Yup.string().required("Ingrese la fecha del cambio de filtro"),
       fechaMantenimiento: Yup.string().required("Ingrese la fecha del proximo mantenimiento"),
-      imgCertificate: Yup.mixed()
-        .nullable()
-        .required("La imagen del certificado es necesaria")
-        .test(
-          "FILE_SIZE",
-          "Tamaño del archivo muy grande",
-          (value) => !value || (value && value.size <= 1024 * 1024)
-        )
-        .test(
-          "FORMAT_FILE",
-          "Solo soporta formatos JPEG, PNG",
-          (value) => !value || (value && SUPPORTED_FORMATS.includes(value?.type))
-        ),
+      imgCertificate: Yup.mixed().nullable().required("La imagen del certificado es necesaria"),
       imgsCollage: Yup.mixed()
         .nullable()
         .required("Las imagenes del cambio son necesarias")
@@ -171,21 +142,6 @@ export default function VehicleConversion() {
       setInfoVehiculo(vehiculo);
     }
   }
-
-  const handleImageChange = (e, formik) => {
-    //console.log(e.target.files);
-    if (e.target.files) {
-      formik.setFieldValue("imgsCollage", e.target.files);
-      const filesArray = Array.from(e.target.files).map((file) => URL.createObjectURL(file));
-
-      //console.log("filesArray: ", filesArray);
-
-      setSelectedFiles((imgsCollage) => [...imgsCollage, ...filesArray]);
-      Array.from(e.target.files).map(
-        (file) => URL.revokeObjectURL(file) // avoid memory leak
-      );
-    }
-  };
 
   return (
     <DashboardLayout>
@@ -394,114 +350,39 @@ export default function VehicleConversion() {
                       <Typography color="textPrimary" variant="h5">
                         Certificado
                       </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          border: "1px dashed rgb(45, 55, 72)",
-                          borderRadius: 1,
-                          flexWrap: "wrap",
-                          justifyContent: "center",
-                          outline: "none",
-                          padding: 4,
-                          "&:hover": {
-                            backgroundColor: "rgba(255, 255, 255, 0.04)",
-                            cursor: "pointer",
-                            opacity: 0.5,
-                          },
-                        }}
-                      >
-                        <input
-                          ref={certificadoRef}
-                          accept=".png, .jpeg"
-                          type="file"
-                          autoComplete="off"
-                          tabIndex="-1"
-                          hidden
-                          onChange={(evt) => {
-                            formik.setFieldValue("imgCertificate", evt.target.files[0]);
-                          }}
-                        />
-                        {formik.values.imgCertificate ? (
-                          <SingleImagePreview file={formik.values.imgCertificate} />
-                        ) : (
-                          <ImageSearchIcon
-                            sx={{
-                              height: 100,
-                              width: 100,
-                            }}
+                      <Card>
+                        <Stack spacing={1.5} alignItems="center">
+                          <SingleFileUpload
+                            field="imgCertificate"
+                            setFieldValue={formik.setFieldValue}
+                            file={formik.values.imgCertificate}
+                            error={formik.touched.imgCertificate && !!formik.errors.imgCertificate}
                           />
-                        )}
-                        <Box sx={{ padding: 3 }}>
-                          <Button onClick={() => certificadoRef.current.click()}>
-                            Selecciona el certificado
-                          </Button>
-                        </Box>
-                      </Box>
-                      <Box sx={{ color: "red" }}>
-                        <ErrorMessage name="imgCertificate" />
-                      </Box>
+                          {formik.touched.imgCertificate && formik.errors.imgCertificate && (
+                            <FormHelperText error>{formik.errors.imgCertificate}</FormHelperText>
+                          )}
+                        </Stack>
+                      </Card>
                     </Grid>
 
                     {/* Collage */}
                     <Grid item xs={12}>
                       <Typography color="textPrimary" variant="h5">
-                        Collage del cambio
+                        Collage del cambio imgsCollage
                       </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          border: "1px dashed rgb(45, 55, 72)",
-                          borderRadius: 1,
-                          flexWrap: "wrap",
-                          justifyContent: "center",
-                          outline: "none",
-                          padding: 4,
-                          "&:hover": {
-                            backgroundColor: "rgba(255, 255, 255, 0.04)",
-                            cursor: "pointer",
-                            opacity: 0.5,
-                          },
-                        }}
-                      >
-                        <input
-                          ref={collageRef}
-                          accept=".png, .jpeg"
-                          type="file"
-                          autoComplete="off"
-                          tabIndex="-1"
-                          hidden
-                          multiple
-                          onChange={(e) => handleImageChange(e, formik)}
-                        />
-                        {formik.values.imgsCollage ? (
-                          <MultipleImagePreview source={selectedFiles} />
-                        ) : (
-                          <ImageSearchIcon
-                            sx={{
-                              height: 100,
-                              width: 100,
-                            }}
+                      <Card>
+                        <Stack spacing={1.5} alignItems="center">
+                          <MultiFileUpload
+                            field="imgsCollage"
+                            setFieldValue={formik.setFieldValue}
+                            files={formik.values.imgsCollage}
+                            error={formik.touched.imgsCollage && !!formik.errors.imgsCollage}
                           />
-                        )}
-                        <Box sx={{ padding: 3 }}>
-                          <Button onClick={() => collageRef.current.click()}>
-                            Selecciona 5 fotos
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setSelectedFiles([]);
-                              formik.setFieldValue("imgsCollage", null);
-                            }}
-                          >
-                            Borrar fotos
-                          </Button>
-                        </Box>
-                      </Box>
-                      <Box sx={{ color: "red" }}>
-                        <ErrorMessage name="imgsCollage" />
-                      </Box>
+                          {formik.touched.imgsCollage && formik.errors.imgsCollage && (
+                            <FormHelperText error>{formik.errors.imgsCollage}</FormHelperText>
+                          )}
+                        </Stack>
+                      </Card>
                     </Grid>
                   </Grid>
                 </Grid>

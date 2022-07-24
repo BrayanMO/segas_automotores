@@ -40,12 +40,12 @@ export async function uploudImage(folder, file, files) {
     /*
      * Agregar un archivo a los datos del formulario.
      */
-    multipar.append("image", file);
+    multipar.append("image", file[0]);
   } else {
     /**
      * Convierto el objeto FileList en una matriz para que cada imagen se pueda obtener y enviar a multipar.
      */
-    Array.from(files).forEach((element) => {
+    files.forEach((element) => {
       multipar.append("image", element);
     });
   }

@@ -22,7 +22,7 @@ export async function uploadImageRepuesto(folder, files) {
   /**
    * Convierto el objeto FileList en una matriz para que cada imagen se pueda obtener y enviar a multipar.
    */
-  Array.from(files).forEach((element) => {
+  files.forEach((element) => {
     multipar.append("image", element);
   });
 

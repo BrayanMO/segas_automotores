@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import {
@@ -9,26 +9,23 @@ import {
   Button,
   Autocomplete,
   CircularProgress,
+  Card,
+  Stack,
+  FormHelperText,
 } from "@mui/material";
 import { InputField } from "src/components/FormFields";
-import { Formik, Form, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { DashboardLayout } from "src/layout/dashboard-layout";
-import ImageSearchIcon from "@mui/icons-material/ImageSearch";
 import { getProveedores, uploadImageRepuesto, addProduct } from "src/Api/RepuestoApi";
 import { size } from "lodash";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-
-const MultipleImagePreview = dynamic(() =>
-  import("src/components/product/Register/MultipleImagePreview")
-);
+import { MultiFileUpload } from "src/components/UploadFile";
 
 const ListProductTable = dynamic(() => import("src/components/product/Register/ListProductTable"));
 
 export default function RegisterProduct() {
-  const imageRepuesto = useRef(null);
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const [listProveedores, setListProveedores] = useState([]);
   const [itemsProducts, setItemsProducts] = useState([]);
 
@@ -101,9 +98,6 @@ export default function RegisterProduct() {
 
     setItemsProducts([...itemsProducts, dataProcessed]);
 
-    //limpio el array de imagenes seleccionadas para que nos las siga acoplando
-    setSelectedFiles([]);
-
     actions.setSubmitting(false);
     actions.resetForm();
   }
@@ -125,21 +119,6 @@ export default function RegisterProduct() {
       toast.error("No hay productos para registrar");
     }
   }
-
-  const handleImageChange = (e, formik) => {
-    //console.log(e.target.files);
-    if (e.target.files) {
-      formik.setFieldValue("imgsRepuestos", e.target.files);
-      const filesArray = Array.from(e.target.files).map((file) => URL.createObjectURL(file));
-
-      //console.log("filesArray: ", filesArray);
-
-      setSelectedFiles((imgs) => [...imgs, ...filesArray]);
-      Array.from(e.target.files).map(
-        (file) => URL.revokeObjectURL(file) // avoid memory leak
-      );
-    }
-  };
 
   return (
     <DashboardLayout>
@@ -166,63 +145,19 @@ export default function RegisterProduct() {
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                   {/* Imagenes */}
                   <Grid item xs={6}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexWrap: "wrap",
-                        border: "1px dashed rgb(45, 55, 72)",
-                        borderRadius: 1,
-                        outline: "none",
-                        padding: 4,
-                        "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.04)",
-                          cursor: "pointer",
-                          opacity: 0.5,
-                        },
-                      }}
-                    >
-                      <input
-                        ref={imageRepuesto}
-                        accept=".png, .jpeg"
-                        type="file"
-                        autoComplete="off"
-                        tabIndex="-1"
-                        hidden
-                        multiple
-                        onChange={(evt) => {
-                          handleImageChange(evt, formik);
-                        }}
-                      />
-
-                      {formik.values.imgsRepuestos ? (
-                        <MultipleImagePreview source={selectedFiles} />
-                      ) : (
-                        <ImageSearchIcon
-                          sx={{
-                            height: 100,
-                            width: 100,
-                          }}
+                    <Card>
+                      <Stack spacing={1.5} alignItems="center">
+                        <MultiFileUpload
+                          field="imgsRepuestos"
+                          setFieldValue={formik.setFieldValue}
+                          files={formik.values.imgsRepuestos}
+                          error={formik.touched.imgsRepuestos && !!formik.errors.imgsRepuestos}
                         />
-                      )}
-                      <Box sx={{ padding: 3 }}>
-                        <Button onClick={() => imageRepuesto.current.click()}>
-                          Selecciona las imagenes
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setSelectedFiles([]);
-                            formik.setFieldValue("imgsRepuestos", null);
-                          }}
-                        >
-                          Borrar imagenes
-                        </Button>
-                      </Box>
-                    </Box>
-                    <Box sx={{ color: "red" }}>
-                      <ErrorMessage name="imgsRepuestos" />
-                    </Box>
+                        {formik.touched.imgsRepuestos && formik.errors.imgsRepuestos && (
+                          <FormHelperText error>{formik.errors.imgsRepuestos}</FormHelperText>
+                        )}
+                      </Stack>
+                    </Card>
                   </Grid>
 
                   <Grid item xs={6}>
