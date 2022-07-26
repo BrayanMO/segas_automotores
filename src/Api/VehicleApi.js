@@ -42,9 +42,6 @@ export async function uploudImage(folder, file, files) {
      */
     multipar.append("image", file[0]);
   } else {
-    /**
-     * Convierto el objeto FileList en una matriz para que cada imagen se pueda obtener y enviar a multipar.
-     */
     files.forEach((element) => {
       multipar.append("image", element);
     });
@@ -116,6 +113,22 @@ export async function updateVehicle(placa) {
     const result = await axios.delete(url, {
       headers: {
         Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+export async function updateConvertionVehicle(data) {
+  try {
+    const url = `${base_host}/vehicle/update-dates-conversion-vehiculo/${data.id}`;
+    const result = await axios.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        "Content-Type": `application/json`,
       },
     });
     return result;

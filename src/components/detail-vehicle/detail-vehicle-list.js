@@ -26,7 +26,7 @@ const RowCustom = dynamic(() => import("./RowCustom"), {
 });
 
 export default function DetailVehicleList(props) {
-  const { data } = props;
+  const { data, reload } = props;
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -38,11 +38,12 @@ export default function DetailVehicleList(props) {
             <TableCell align="right">Proxima revision</TableCell>
             <TableCell align="right">Proximo mantenimiento</TableCell>
             <TableCell align="right">Cambio filtro</TableCell>
+            <TableCell align="center">Actualizar</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {map(orderBy(data, ["date_ingreso"], ["desc"]), (row) => (
-            <RowCustom key={row.id} row={row} />
+            <RowCustom key={row.id} row={row} reload={reload} />
           ))}
         </TableBody>
       </Table>

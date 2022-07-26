@@ -56,7 +56,7 @@ const Vehicle = () => {
           </NextLink>
           <Box sx={{ pt: 1 }}>
             <Box sx={{ mt: 3 }}>
-              <DetailVehicleList data={listConversion} />
+              <DetailVehicleList data={listConversion} reload={router} />
             </Box>
           </Box>
         </Container>
