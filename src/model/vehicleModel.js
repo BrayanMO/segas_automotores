@@ -202,4 +202,81 @@ module.exports = class vehicleModel {
       }
     });
   }
+
+  async updateConversionVehiculo(req, res) {
+    const query = ` 
+      SELECT date_next_revision, date_change_filtro, date_mantenimiento, history_date 
+      FROM convert_vehiculo WHERE id_convert = ${req.params.id};
+    `;
+
+    db.query(query, (err, rows) => {
+      try {
+        const row =
+          rows === undefined ? [] : rows[0].history_date === null ? [] : rows;
+
+        let history = JSON.parse(row.length != 0 ? row[0].history_date : `[]`);
+
+        // console.log(history, "history");
+
+        if (!history.length) {
+          history.push({
+            date_revision: moment(rows[0].date_next_revision).format(
+              "YYYY-MM-DD"
+            ),
+            date_change_filtro: moment(rows[0].date_change_filtro).format(
+              "YYYY-MM-DD"
+            ),
+            date_mantenimiento: moment(rows[0].date_mantenimiento).format(
+              "YYYY-MM-DD"
+            ),
+          });
+        } else {
+          history = [
+            ...history,
+            {
+              date_revision: moment(rows[0].date_next_revision).format(
+                "YYYY-MM-DD"
+              ),
+              date_change_filtro: moment(rows[0].date_change_filtro).format(
+                "YYYY-MM-DD"
+              ),
+              date_mantenimiento: moment(rows[0].date_mantenimiento).format(
+                "YYYY-MM-DD"
+              ),
+            },
+          ];
+        }
+
+        const update = {
+          history_date: JSON.stringify(history),
+          date_next_revision: req.body.newDateRevision,
+          date_change_filtro: req.body.newDateChangeFiltro,
+          date_mantenimiento: req.body.newDateMantenimiento,
+        };
+
+        const query2 = `
+          update convert_vehiculo
+          set ?
+          where id_convert = ${req.params.id};
+        `;
+
+        db.query(query2, [update], (err, rows) => {
+          if (!err) {
+            return res.status(200).json({ message: "Actualizacion correcta" });
+          } else {
+            return res.status(400).json({
+              message: "Error al actualizar el vehiculo",
+              err,
+            });
+          }
+        });
+      } catch (err) {
+        return res.status(400).json({
+          message: "Error al actualizar el vehiculo",
+          err,
+        });
+      }
+    });
+  }
+
 };

@@ -34,4 +34,10 @@ module.exports = class vehicleController {
     const update = await objVehicle.updateVehicle(req, res);
     return update;
   }
+
+  async updateConversionVehiculo(req, res) {
+    const update = await objVehicle.updateConversionVehiculo(req, res);
+    return update;
+  }
+
 };

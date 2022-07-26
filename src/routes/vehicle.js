@@ -32,4 +32,8 @@ routes.delete("/update-vehicle/:placa", (req, res) => {
   objVehicle.updateVehicle(req, res);
 });
 
+routes.post("/update-dates-conversion-vehiculo/:id", (req, res) => {
+  objVehicle.updateConversionVehiculo(req, res);
+});
+
 module.exports = routes;
