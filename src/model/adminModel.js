@@ -1,3 +1,4 @@
+const moment = require("moment");
 const db = require("../config/db/db");
 const getRows = require("../utils/getRows");
 
@@ -98,11 +99,11 @@ module.exports = class adminModel {
   }
 
   async productsByMonth(req, res) {
-    const { date } = req.body;
+    const date = new Date();
 
     const query = `
         SET @petition = 'products-used-in-the-month';
-        CALL sp_admin( @petition, '${date}');
+        CALL sp_admin( @petition, '${moment(date).format("YYYY-MM-DD")}');
     `;
 
     db.query(query, (err, rows) => {
