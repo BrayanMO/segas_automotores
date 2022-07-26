@@ -227,14 +227,24 @@ const HistoryDate = ({ row: { history } }) => {
 
   return (
     <Box sx={{ height: 250, width: "100%" }}>
-      <Chrono
-        items={data}
-        mode="VERTICAL_ALTERNATING"
-        twoColumnscardHeight={100}
-        cardWidth={250}
-        cardHeight={100}
-        hideControls
-      />
+      {data && data.length > 0 ? (
+        <Chrono
+          items={data}
+          mode="VERTICAL_ALTERNATING"
+          twoColumnscardHeight={100}
+          cardWidth={250}
+          cardHeight={100}
+          hideControls
+        />
+      ) : (
+        <Box
+          sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Aun no cuenta con un historial de revisiones
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

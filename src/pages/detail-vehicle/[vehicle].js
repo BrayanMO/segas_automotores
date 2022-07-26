@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NextLink from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Box, Container, Button, CircularProgress } from "@mui/material";
+import { Box, Container, Button, CircularProgress, Typography } from "@mui/material";
 import { DashboardLayout } from "src/layout/dashboard-layout";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { listVehicleConversion } from "src/Api/VehicleApi";
@@ -56,7 +56,22 @@ const Vehicle = () => {
           </NextLink>
           <Box sx={{ pt: 1 }}>
             <Box sx={{ mt: 3 }}>
-              <DetailVehicleList data={listConversion} reload={router} />
+              {listConversion && listConversion.length > 0 ? (
+                <DetailVehicleList data={listConversion} reload={router} />
+              ) : (
+                <Box
+                  sx={{
+                    diplay: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography variant="h6">
+                    Aun no se le realizan conversiones al vehiculo de placa {router.query.vehicle}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Box>
         </Container>
