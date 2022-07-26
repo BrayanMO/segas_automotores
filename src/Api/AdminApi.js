@@ -57,9 +57,9 @@ export async function getProductsStockMin() {
   return result.data;
 }
 
-export async function getProductsByMonth(data) {
+export async function getProductsByMonth() {
   const url = `${base_host}/admin/products-by-month`;
-  const result = await axios.get(url, data, {
+  const result = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${getToken()}`,
     },

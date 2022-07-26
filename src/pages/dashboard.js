@@ -80,6 +80,9 @@ export default function Dashboard() {
 
     const response5 = await getNextChangeFilter();
     setNextChangeFilter(response5);
+
+    const response6 = await getProductsByMonth();
+    setMostUsedProducts(response6);
   }
 
   return (
@@ -109,7 +112,7 @@ export default function Dashboard() {
               <ProductStock callback={productStock} />
             </Grid>
             <Grid item lg={4} md={6} xl={3} xs={12}>
-              <MostUsedProducts sx={{ height: "100%" }} />
+              <MostUsedProducts sx={{ height: "100%" }} callback={mostUsedProducts} />
             </Grid>
             <Grid item lg={8} md={12} xl={9} xs={12}>
               <NextChangeFilter callback={nextChangeFilter} />

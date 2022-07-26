@@ -1,20 +1,51 @@
 import { Doughnut } from "react-chartjs-2";
-import { Box, Card, CardContent, CardHeader, Divider, Typography, useTheme } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Divider, useTheme } from "@mui/material";
+import { randomColor } from "src/utils/randomColor";
+import { map, merge, flatten, compact } from "lodash";
 
 export default function MostUsedProducts(props) {
+  const { callback } = props;
   const theme = useTheme();
 
+  const merged = merge(
+    compact(
+      flatten(
+        map(callback, (item) =>
+          map(item.products, (pro) => {
+            const data = pro.id && {
+              id: pro.id,
+              cant: pro.cantidad,
+              name: pro.nombre,
+            };
+            return data;
+          })
+        )
+      )
+    )
+  );
+
+  //sumar las cantidades con el identificador igual  y retornar un array con los ids y el nombre del producto
+  const sumar = merged.reduce((acc, cur) => {
+    const existe = acc.find((item) => item.id === cur.id);
+    if (existe) {
+      existe.cant += cur.cant;
+    } else {
+      acc.push({ id: cur.id, name: cur.name, cant: cur.cant });
+    }
+    return acc;
+  }, []);
+
   const data = {
+    labels: map(sumar, (item) => item.name),
     datasets: [
       {
-        data: [10, 8, 15, 5],
-        backgroundColor: ["#3F51B5", "#e53935", "#FB8C00", "#009688"],
-        borderWidth: 8,
-        borderColor: "#FFFFFF",
-        hoverBorderColor: "#FFFFFF",
+        data: map(sumar, (item) => item.cant),
+        backgroundColor: map(sumar, (item) => randomColor(theme)),
+        hoverBackgroundColor: map(sumar, (item) => randomColor(theme)),
+        borderColor: "rgba(255,255,255,0.7)",
+        borderWidth: 2,
       },
     ],
-    labels: ["Prueba18", "Prueba2", "prueba3", "prueba5"],
   };
 
   const options = {
