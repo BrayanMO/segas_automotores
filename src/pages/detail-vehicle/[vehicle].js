@@ -56,22 +56,7 @@ const Vehicle = () => {
           </NextLink>
           <Box sx={{ pt: 1 }}>
             <Box sx={{ mt: 3 }}>
-              {listConversion && listConversion.length > 0 ? (
-                <DetailVehicleList data={listConversion} reload={router} />
-              ) : (
-                <Box
-                  sx={{
-                    diplay: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
-                  <Typography variant="h6">
-                    Aun no se le realizan conversiones al vehiculo de placa {router.query.vehicle}
-                  </Typography>
-                </Box>
-              )}
+              <DetailVehicleList data={listConversion} reload={router} />
             </Box>
           </Box>
         </Container>
