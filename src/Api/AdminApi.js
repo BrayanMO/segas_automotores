@@ -67,3 +67,36 @@ export async function getProductsByMonth() {
 
   return result.data;
 }
+
+export async function getMeApi(id) {
+  const url = `${base_host}/admin/account-profile/${id}`;
+  const result = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+
+  return result.data;
+}
+
+export async function updateMeApi(id, data) {
+  const url = `${base_host}/admin/account-profile/${id}`;
+  const result = await axios.put(url, data, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+
+  return result;
+}
+
+export async function updatePasswordApi(id, data) {
+  const url = `${base_host}/admin/account-profile/${id}/password`;
+  const result = await axios.put(url, data, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+  });
+
+  return result;
+}
