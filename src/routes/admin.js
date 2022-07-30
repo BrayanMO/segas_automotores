@@ -29,4 +29,16 @@ routes.get("/products-by-month", (req, res) => {
   objAdmin.ProductsByMonth(req, res);
 });
 
+routes.put("/account-profile/:id", (req, res) => {
+  objAdmin.UpdateAccount(req, res);
+});
+
+routes.get("/account-profile/:id", (req, res) => {
+  objAdmin.Account(req, res);
+});
+
+routes.put("/account-profile/:id/password", (req, res) => {
+  objAdmin.UpdateAccountPassword(req, res);
+});
+
 module.exports = routes;
