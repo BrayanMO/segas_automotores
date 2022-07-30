@@ -31,4 +31,19 @@ module.exports = class adminController {
     const products_by_month = await objModel.productsByMonth(req, res);
     return products_by_month;
   }
+  
+  async UpdateAccount(req, res) {
+    const update_account = await objModel.updateAccount(req, res);
+    return update_account;
+  }
+
+  async Account(req, res) {
+    const account = await objModel.account(req, res);
+    return account;
+  }
+
+  async UpdateAccountPassword(req, res) {
+    const updatePassword = await objModel.updatePassword(req, res);
+    return updatePassword;
+  }
 };
