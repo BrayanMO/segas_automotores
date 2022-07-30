@@ -15,20 +15,25 @@ module.exports = class loginModel {
         SELECT @a AS id, @b AS usuario;
     `;
 
-    jwt.sign({ payload }, "secretkey", (err, jwt) => {
-      db.query(query, [email, password], (err, rows, fields) => {
-        if (!err) {
-          const row = getRows(rows);
-          if (!row[0].usuario) return res.json({ user: null });
-          return res.json({
-            user: row[0].usuario,
-            id: row[0].id,
-            jwt,
-          });
-        } else {
-          console.log(err);
+     db.query(query, [email, password], (err, rows, fields) => {
+      const row = getRows(rows);
+      jwt.sign(
+        {
+          id: row[0]?.id,
+          usuario: row[0]?.usuario,
+        },
+        "secretkey",
+        (err, jwt) => {
+          if (!err) {
+            if (!row[0].usuario) return res.json({ user: null });
+            return res.json({
+              jwt,
+            });
+          } else {
+            console.log(err);
+          }
         }
-      });
+      );
     });
   }
 };
