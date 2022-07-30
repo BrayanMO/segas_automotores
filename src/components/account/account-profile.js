@@ -9,16 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 
-const user = {
-  avatar: "/static/images/avatars/account.png",
-  city: "PIURA",
-  country: "PERÚ",
-  jobTitle: "Web Developer",
-  name: "Luis Enrique",
-  email: "lmorochofebres@gmail.com",
-};
-
 export default function AccountProfile(props) {
+  const { user } = props;
   return (
     <Card {...props}>
       <CardContent>
@@ -30,7 +22,7 @@ export default function AccountProfile(props) {
           }}
         >
           <Avatar
-            src={user.avatar}
+            src="/static/images/avatars/account.png"
             sx={{
               height: 64,
               mb: 2,
@@ -38,13 +30,10 @@ export default function AccountProfile(props) {
             }}
           />
           <Typography color="textPrimary" gutterBottom variant="h5">
-            {user.name}
+            {user?.nombre}
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {`${user.city} ${user.country}`}
-          </Typography>
-          <Typography color="textSecondary" variant="body2">
-            {user.email}
+            {user?.email}
           </Typography>
         </Box>
       </CardContent>

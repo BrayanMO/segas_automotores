@@ -1,136 +1,95 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  TextField,
-} from "@mui/material";
-
-const states = [
-  {
-    value: "alabama",
-    label: "Alabama",
-  },
-  {
-    value: "new-york",
-    label: "New York",
-  },
-  {
-    value: "san-francisco",
-    label: "San Francisco",
-  },
-];
+import { Box, Button, Card, CardContent, CardHeader, Divider, Grid } from "@mui/material";
+import { Form, Formik } from "formik";
+import { InputField } from "../FormFields";
+import * as Yup from "yup";
+import { updateMeApi } from "src/Api/AdminApi";
+import { toast } from "react-toastify";
 
 export default function AccountProfileDetails(props) {
-  const [values, setValues] = useState({
-    firstName: "Luis Enrique",
-    lastName: "Morocho Febres",
-    email: "lmorochofebres@gmail.com",
-    phone: "",
-    state: "Piura",
-    country: "PERÚ",
-  });
+  const { user, setReloadUser } = props;
 
-  const handleChange = (event) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
+  function initialValues() {
+    return {
+      firstName: `${user?.nombre}`,
+      lastName: `${user?.apellido}`,
+      phone: `${user?.telef}`,
+      email: `${user?.email}`,
+      address: `${user?.direccion}`,
+    };
+  }
+
+  function validationSchema() {
+    return Yup.object({
+      firstName: Yup.string().max(255).required("Este campo es requerido"),
+      lastName: Yup.string().max(255).required("Este campo es requerido"),
+      phone: Yup.string()
+        .max(255)
+        .required("Este campo es requerido")
+        .matches(/^[0-9]{9}$/, "El telefono debe tener 9 digitos"),
+      email: Yup.string()
+        .email("Ingrese un correo valido")
+        .max(255)
+        .required("Este campo es requerido"),
+      address: Yup.string().max(255).required("Este campo es requerido"),
     });
-  };
+  }
+
+  async function _handleSubmit(values, actions) {
+    const response = await updateMeApi(user.id_login, values);
+
+    if (response.status === 200) {
+      toast.success(response.data.message);
+      setReloadUser(true);
+    } else {
+      toast.error(response.data.message);
+    }
+  }
+
+  if (user === undefined) return null;
 
   return (
-    <form autoComplete="off" noValidate {...props}>
-      <Card>
-        <CardHeader subheader="La información se puede editar" title="Profile" />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                helperText="Por favor, especifique el primer nombre"
-                label="Nombres"
-                name="firstName"
-                onChange={handleChange}
-                required
-                value={values.firstName}
-                variant="outlined"
-              />
+    <Formik
+      initialValues={initialValues()}
+      validationSchema={validationSchema()}
+      onSubmit={_handleSubmit}
+    >
+      <Form>
+        <Card>
+          <CardHeader subheader="La información se puede editar" title="Profile" />
+          <Divider />
+          <CardContent>
+            <Grid container spacing={3}>
+              <Grid item md={6} xs={12}>
+                <InputField name="firstName" label="Nombre" fullWidth />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <InputField name="lastName" label="Apellido" fullWidth />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <InputField name="email" label="Email" fullWidth disabled />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <InputField name="phone" label="Telefono" fullWidth />
+              </Grid>
+              <Grid item md={12}>
+                <InputField name="address" label="Direccion" fullWidth />
+              </Grid>
             </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Apellidos"
-                name="lastName"
-                onChange={handleChange}
-                required
-                value={values.lastName}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Correo Electronico"
-                name="email"
-                onChange={handleChange}
-                required
-                value={values.email}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Numero de Celular"
-                name="phone"
-                onChange={handleChange}
-                type="number"
-                value={values.phone}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Pais"
-                name="country"
-                onChange={handleChange}
-                required
-                value={values.country}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item md={6} xs={12}>
-              <TextField
-                fullWidth
-                label="Ciudad"
-                name="state"
-                onChange={handleChange}
-                required
-                value={values.state}
-                variant="outlined"
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            p: 2,
-          }}
-        >
-          <Button color="primary" variant="contained">
-            Guardar Cambios
-          </Button>
-        </Box>
-      </Card>
-    </form>
+          </CardContent>
+          <Divider />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              p: 2,
+            }}
+          >
+            <Button type="submit" variant="contained" color="primary">
+              Guardar cambios
+            </Button>
+          </Box>
+        </Card>
+      </Form>
+    </Formik>
   );
 }
