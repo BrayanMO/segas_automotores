@@ -7,6 +7,7 @@ import { createEmotionCache } from "../utils/create-emotion-cache";
 import { ToggleColorMode } from "../theme";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import { UserProvider } from "src/context/AuthContext";
 
 const clientSideEmotionCache = createEmotionCache();
 
@@ -21,23 +22,25 @@ const App = (props) => {
         <title>Dashboard Template</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ToggleColorMode>
-          <CssBaseline />
-          {getLayout(<Component {...pageProps} />)}
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss={false}
-            draggable
-            pauseOnHover
-          />
-        </ToggleColorMode>
-      </LocalizationProvider>
+      <UserProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <ToggleColorMode>
+            <CssBaseline />
+            {getLayout(<Component {...pageProps} />)}
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss={false}
+              draggable
+              pauseOnHover
+            />
+          </ToggleColorMode>
+        </LocalizationProvider>
+      </UserProvider>
     </CacheProvider>
   );
 };
