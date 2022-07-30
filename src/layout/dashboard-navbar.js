@@ -24,13 +24,11 @@ import MenuPopover from "../components/menupopover/MenuPopover";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { TOKEN } from "../Config/Constants";
-import { removeToken } from "src/Api/TokenApi";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "src/theme";
+import { useUSer } from "src/context/AuthContext";
 
 const DashboardNavbarRoot = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -57,7 +55,7 @@ const MENU_OPTIONS = [
 
 export const DashboardNavbar = (props) => {
   const { onSidebarOpen, ...other } = props;
-  const router = useRouter();
+  const { user, logout } = useUSer();
 
   const anchorRef = useRef(null);
 
@@ -69,12 +67,6 @@ export const DashboardNavbar = (props) => {
 
   const handleClose = () => {
     setOpen(null);
-  };
-
-  const logout = () => {
-    Cookies.remove(TOKEN);
-    removeToken();
-    router.push("/");
   };
 
   const theme = useTheme();
@@ -172,10 +164,10 @@ export const DashboardNavbar = (props) => {
           >
             <Box sx={{ my: 1.5, px: 2.5 }}>
               <Typography variant="subtitle2" noWrap>
-                Usuario
+                Usuario:
               </Typography>
               <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
-                correo
+                {user?.username}
               </Typography>
             </Box>
 

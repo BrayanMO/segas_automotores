@@ -6,13 +6,12 @@ import * as Yup from "yup";
 import { Box, Button, Container, Card, CardContent, TextField, Typography } from "@mui/material";
 import { loginPersonal } from "src/Api/UserApi";
 import { toast } from "react-toastify";
-import { TOKEN } from "src/Config/Constants";
-import Cookies from "js-cookie";
 import { InputField } from "src/components/FormFields";
-import { setToken } from "src/Api/TokenApi";
+import { useUSer } from "src/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useUSer();
 
   function initialValues() {
     return {
@@ -37,9 +36,8 @@ export default function LoginForm() {
 
       if (response?.jwt) {
         toast.success("Inicio de sesion Correcto");
-        Cookies.set(TOKEN, response.jwt);
+        login(response.jwt);
         router.push("/dashboard");
-        setToken(response.jwt);
       } else {
         toast.error("Usuario incorrecto");
       }
